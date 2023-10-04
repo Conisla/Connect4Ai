@@ -169,7 +169,8 @@ circle.yellow {
 </style>
 
 <script>
-import * as connect4 from '@/connect4.js'
+import * as connect4 from '@/connect4.js';
+import io from 'socket.io-client';
 export default {
     name:'GameGrid',
     data() {
@@ -182,7 +183,8 @@ export default {
             yellow: 2,
             empty: 0,
             gameOver: false,
-            vsAI: false
+            vsAI: false,
+            socket: io('http://localhost:3000'),
         }
     },
     methods: {
@@ -218,6 +220,8 @@ export default {
 
         takeTurn(column){
             if(!this.gameOver && connect4.isValidColumn(this.board, column)){
+
+
                 let row = connect4.getOpenRow(this.board, column)
                 let color = this.turn == this.player1 ? this.red : this.yellow
                connect4.dropPiece(this.board, row, column, color)
@@ -246,7 +250,14 @@ export default {
 
     created() {
         this.board = connect4.createBoard()
-        // console.log("BEGIN = ",this.board)
+        console.log("BEGIN = ",this.board)
+        
+        this.socket.emit('message', 'Start game');
+
+        this.socket.on('response', (msg) => {
+            console.log(msg)
+        })
+        
     },
 }
 </script>
