@@ -1,8 +1,28 @@
 <template>
     <div>
+        
         <h1>PUISSANCE 4</h1>
-        <h2 v-show="!gameOver" >Player <span v-if="turn==player1">{{ this.red }}</span><span v-else>{{ this.yellow }}</span></h2>
-        <h2 v-show="gameOver" >Player <span v-if="turn==player1">{{ this.red }} </span><span v-else>{{ this.yellow }}</span> Wins !</h2>
+
+        <div class="toggle-ia-btn">
+            <p>
+                Vous jouez contre :
+                <span v-if="vsAI">IA</span>
+                <span v-else>Joueur</span>
+            </p>
+            <label class="switch">
+                <input type="checkbox" v-model="vsAI">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        
+        <h2 v-show="!gameOver" >Joueur <span v-if="turn==player1">{{ this.red }}</span><span v-else>{{ this.yellow }}</span></h2>
+        
+        <div v-show="gameOver">
+            <h2>Joueur <span v-if="turn==player1">{{ this.red }} </span><span v-else>{{ this.yellow }}</span> a gagné !</h2>
+            <button class="reset-btn" type="button" @click="resetBoard()"> Nouvelle Partie </button> 
+        </div>
+        
+        
         <div class="wrapper">
 
             <div id="board">
@@ -41,6 +61,64 @@
 </template>
 
 <style>
+/* Styles pour le toggle switch */
+.toggle-ia-btn{
+    margin: 2% 0;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
 .wrapper{
     display: flex;
     justify-content: center;
@@ -63,6 +141,10 @@ circle.red {
 
 circle.yellow {
     fill: yellow;
+}
+
+.reset-btn{
+    position: relative;
 }
 
 #board{
@@ -99,26 +181,65 @@ export default {
             red: 1,
             yellow: 2,
             empty: 0,
-            gameOver: false
+            gameOver: false,
+            vsAI: false
         }
     },
     methods: {
+        selectBestColumn(){
+
+            let validColumns = connect4.getValidColumns(this.board)
+            let highestScore = -1000
+            let column = Math.floor(Math.random * validColumns.length)
+
+            for (let i = 0; i < validColumns.length; i++) {
+
+                let newColumn = validColumns[i]
+                let row = connect4.getOpenRow(this.board, newColumn)
+                let boardCopy = connect4.copyBoard(this.board)
+
+                connect4.dropPiece(boardCopy,row,newColumn, this.yellow)
+                let newScore = connect4.boardScore(boardCopy)
+
+                if(newScore > highestScore){
+                    highestScore = newScore
+                    column = newColumn
+                }
+            }
+            return column
+        },
+
+        resetBoard(){
+            console.log("RESET");
+            this.board = connect4.createBoard()
+            this.gameOver = false
+            this.turn = this.player1
+        },
+
         takeTurn(column){
             if(!this.gameOver && connect4.isValidColumn(this.board, column)){
-
                 let row = connect4.getOpenRow(this.board, column)
-
                 let color = this.turn == this.player1 ? this.red : this.yellow
-
                connect4.dropPiece(this.board, row, column, color)
-
                 if(connect4.isWinningMove(this.board, color)){
-                    console.log('WINNER !!!!!!!');
                     this.gameOver = true;
                 }else{
                     this.turn +=1
                     this.turn = this.turn % 2
+                    if(this.vsAI){this.AITurn()}
+                    
                 }
+            }
+        },
+        AITurn(){
+            let column = this.selectBestColumn()
+            let row = connect4.getOpenRow(this.board, column)
+            connect4.dropPiece(this.board, row, column, this.yellow)
+            if(connect4.isWinningMove(this.board, this.yellow)){
+                this.gameOver = true
+            }else{
+                this.turn +=1
+                this.turn = this.turn % 2
             }
         }
     },
