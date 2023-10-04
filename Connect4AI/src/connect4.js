@@ -35,18 +35,55 @@ export function dropPiece(board,row, column, color){
 }
 
 export function isWinningMove(board, color){
+
+    // Check all rows
     for(let c=0; c < ColumnCount-3; c++){
         for(let r=0; r < RowCount; r++){
-            // console.log("Board = ",board);
             if(
                 board[r][c] == color &&
                 board[r][c+1] == color &&
                 board[r][c+2] == color &&
                 board[r][c+3] == color
-            ){
-                return true
-            }
+            ){ return true }
         }
-
     }
+
+    // Check all columns 
+    for (let c = 0; c < ColumnCount; c++) {
+        for (let r = RowCount-1; r >= RowCount-3; r--) {
+            if (
+                board[r][c] == color &&
+                board[r-1][c] == color &&
+                board[r-2][c] == color &&
+                board[r-3][c] == color
+            ){ return true }
+        }
+    }
+
+    // Check all diag upward 
+    for (let c = 0; c < ColumnCount - 3; c++) {
+        for (let r = RowCount-1; r >= RowCount-3; r--) {
+            if (
+                board[r][c] == color &&
+                board[r-1][c+1] == color &&
+                board[r-2][c+2] == color &&
+                board[r-3][c+3] == color
+            ){ return true }
+        }
+    }
+
+    // Check all diag downward 
+    for (let c = 0; c < ColumnCount - 3; c++) {
+        for (let r = 0; r < RowCount-3; r++) {
+            if (
+                board[r][c] == color &&
+                board[r+1][c+1] == color &&
+                board[r+2][c+2] == color &&
+                board[r+3][c+3] == color
+            ){ return true }
+        }
+    }
+    
+
+
 }

@@ -1,8 +1,8 @@
 <template>
     <div>
-        GAMEGRID
-        <h4>Player <span v-if="turn==player1">{{ this.red }}</span><span v-else>{{ this.yellow }}</span></h4>
-
+        <h1>PUISSANCE 4</h1>
+        <h2 v-show="!gameOver" >Player <span v-if="turn==player1">{{ this.red }}</span><span v-else>{{ this.yellow }}</span></h2>
+        <h2 v-show="gameOver" >Player <span v-if="turn==player1">{{ this.red }} </span><span v-else>{{ this.yellow }}</span> Wins !</h2>
         <div class="wrapper">
 
             <div id="board">
@@ -44,7 +44,7 @@
 .wrapper{
     display: flex;
     justify-content: center;
-    margin-top: 5%;
+    margin-top: 50px;
 }
 
 .row {
@@ -110,11 +110,7 @@ export default {
 
                 let color = this.turn == this.player1 ? this.red : this.yellow
 
-                console.log("BEFORE",this.board)
-
-                console.log("DropPiece",connect4.dropPiece(this.board, row, column, color))
-               
-                console.log("AFTER",this.board)
+               connect4.dropPiece(this.board, row, column, color)
 
                 if(connect4.isWinningMove(this.board, color)){
                     console.log('WINNER !!!!!!!');
@@ -129,7 +125,7 @@ export default {
 
     created() {
         this.board = connect4.createBoard()
-        console.log("BEGIN = ",this.board)
+        // console.log("BEGIN = ",this.board)
     },
 }
 </script>
