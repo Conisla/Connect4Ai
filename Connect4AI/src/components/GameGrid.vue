@@ -22,7 +22,6 @@
             <button class="reset-btn" type="button" @click="resetBoard()"> Nouvelle Partie </button> 
         </div>
         
-        
         <div class="wrapper">
 
             <div id="board">
@@ -158,13 +157,11 @@ circle.yellow {
     height: 100%;
     transition: background-color 0.3s ease-out;
     background-color: transparent;
-    
 }
 
 .column:hover{
     background-color: rgba(255, 255, 255, 0.3);
     cursor: pointer;
-
 }
 </style>
 
@@ -178,9 +175,9 @@ export default {
             turn: 0,
             player1: 0,
             player2: 1,
-            red: 1,
-            yellow: 2,
-            empty: 0,
+            red: connect4.Red,
+            yellow: connect4.Yellow,
+            empty: connect4.Empty,
             gameOver: false,
             vsAI: false
         }
@@ -198,7 +195,7 @@ export default {
                 let row = connect4.getOpenRow(this.board, newColumn)
                 let boardCopy = connect4.copyBoard(this.board)
 
-                connect4.dropPiece(boardCopy,row,newColumn, this.yellow)
+                connect4.dropPiece(boardCopy,row,newColumn,this.yellow)
                 let newScore = connect4.boardScore(boardCopy)
 
                 if(newScore > highestScore){
@@ -227,7 +224,6 @@ export default {
                     this.turn +=1
                     this.turn = this.turn % 2
                     if(this.vsAI){this.AITurn()}
-                    
                 }
             }
         },

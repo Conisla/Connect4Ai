@@ -28,6 +28,13 @@ function getScore(section) {
     return score
 }
 
+export function minimax(board, depth, maximizingPlayer){
+    let isTerminal = isValidColumn(board,Red) || isValidColumn(board,Yellow) || getValidColumns(board).length==0
+    if(isTerminal || depth == 0){
+        
+    }
+}
+
 // Créer un board vide 
 export function createBoard() {
     let board = [];
@@ -110,7 +117,7 @@ export function boardScore(board) {
     return score
 }
 
-// Vérifier si une colonne donnée est jouable
+// Vérifier si une colonne est jouable
 export function isValidColumn(board, column) {
     return board[0][column] == 0   
 }
