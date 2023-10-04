@@ -4,6 +4,7 @@ const Red = 1
 const Yellow = 2
 const Empty = 0
 
+// Retourne le nombre de valeur pour chaque clés (0:Empty 1:player1 2:player2)
 function count(inputArray, item) {
     const map = inputArray.reduce((acc,key) => acc.set(key, (acc.get(key) || 0) + 1), new Map())
     return map.get(item) || 0
@@ -26,7 +27,6 @@ function getScore(section) {
 
     return score
 }
-
 
 // Créer un board vide 
 export function createBoard() {
@@ -110,6 +110,11 @@ export function boardScore(board) {
     return score
 }
 
+// Vérifier si une colonne donnée est jouable
+export function isValidColumn(board, column) {
+    return board[0][column] == 0   
+}
+
 export function getValidColumns(board) {
     let validColumns = []
     for (let column = 0; column < ColumnCount; column++) {
@@ -118,11 +123,6 @@ export function getValidColumns(board) {
         }
     }
     return validColumns
-}
-
-// Vérifier si une colonne donnée est jouable
-export function isValidColumn(board, column) {
-    return board[0][column] == 0   
 }
 
 export function getOpenRow(board, column) {
