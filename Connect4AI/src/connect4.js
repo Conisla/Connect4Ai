@@ -1,8 +1,8 @@
 const RowCount = 6
 const ColumnCount = 7
-const Red = 1
-const Yellow = 2
-const Empty = 0
+export const Red = 1
+export const Yellow = 2
+export const Empty = 0
 
 // Retourne le nombre de valeur pour chaque clés (0:Empty 1:player1 2:player2)
 function count(inputArray, item) {
