@@ -221,12 +221,27 @@ export default {
 
                 let row = connect4.getOpenRow(this.board, column)
                 let color = this.turn == this.player1 ? this.red : this.yellow
+
                connect4.dropPiece(this.board, row, column, color)
+
+            //    socket.on('move:received', (move) => {
+            //         connect4.dropPiece(this.board, move , move, color)
+            //         // console.log(move)
+            //    })
+                
+                // socket.emit('makeMove', row);
+
                 if(connect4.isWinningMove(this.board, color)){
                     this.gameOver = true;
+                    // socket.emit('gameOver', (this.gameOver))
                 }else{
+                    // socket.on('playermove', playerID => {
+                    //     this.socket.emit('player', (this.turn))
+                    // })
                     this.turn +=1
                     this.turn = this.turn % 2
+                    // this.socket.on('playermove', playerID)
+
                     if(this.vsAI){this.AITurn()}
                 }
             }
