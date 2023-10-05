@@ -1,5 +1,5 @@
 const express = require('express');
-const {createBoard, isValidColumn, getOpenRow} = require('./connect4')
+const {createBoard, isValidColumn, getOpenRow, isWinningMove, dropPiece} = require('./connect4')
 
 const app = express();
 const httpServer = require("http").createServer(app);
@@ -26,11 +26,25 @@ io.on('connection', (socket) => {
       socket.emit('response', 'Message reçu !');
       
     });
-    
-    socket.emit('startgame', (createBoard()));
 
-    socket.on('sendRow', (data) => {
-      // getOpenRow(board, column)
+    let gameBoard = createBoard();
+    socket.emit('startgame', (gameBoard));
+
+    socket.on('makeMove', (column, playerColor) => {
+      if (isValidColumn(gameBoard, column)) {
+        const row = getOpenRow(gameBoard, column);
+
+        if (row !== -1) {
+
+          gameBoard = dropPiece(gameBoard, row, column, playerColor)
+          io.emit('updateGame', (gameBoard, playerColor));
+  
+          // Vérifier si le joueur a gagné
+          if (isWinningMove(gameBoard, playerColor)) {
+            io.emit('gameOver', `${playerColor === 1 ? 'Player 1' : 'Player 2'} wins!`);
+          }
+        }
+      }
     })
 
     // // mouvement fait

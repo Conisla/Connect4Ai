@@ -182,6 +182,7 @@ export default {
             gameOver: false,
             vsAI: false,
             socket: io('http://localhost:3000'),
+            currentUser: "",
         }
     },
     methods: {
@@ -216,12 +217,9 @@ export default {
         },
 
         takeTurn(column){
-            this.socket.on('startgame', (board) => {
+            this.socket.emit('makeMove', column, this.turn);
 
-                if(!this.gameOver && connect4.isValidColumn(board, column)){
-                    
-                }
-            })
+            
                 // if(!this.gameOver && connect4.isValidColumn(this.board, column)){
 
 
@@ -256,8 +254,6 @@ export default {
     },
 
     created() {
-        // this.board = connect4.createBoard()
-        // console.log("BEGIN = ",this.board)
         this.socket.on('startgame', (boards) => {
             this.board = boards;
         })
@@ -268,6 +264,16 @@ export default {
             console.log(msg)
         })
         
+        this.socket.on('updateGame', (updatedGameBoard, playerColor) => {
+                
+                this.board = updatedGameBoard;
+                // console.log(gameBoard);
+            this.socket.on('gameOver', (message, gameBoard) => {
+                console.log(message)
+            })
+            
+        });
+
     },
 }
 </script>
