@@ -5,8 +5,8 @@
 
 <template>
     <div>
-      <!-- <GameGrid/> -->
-      <Mygamegrid/>
+      <GameGrid/>
+      <!-- <Mygamegrid/> -->
     </div>
 </template>
 
