@@ -6,8 +6,8 @@
 
 <template>
     <div>
-      <!-- <GameGrid/> -->
-      <Chat/>
+      <GameGrid/>
+      <!-- <Chat/> -->
       <!-- <Mygamegrid/> -->
     </div>
 </template>
