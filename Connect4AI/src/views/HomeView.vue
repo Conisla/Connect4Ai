@@ -1,11 +1,13 @@
 <script setup>
   import GameGrid from '../components/GameGrid.vue';
   import Mygamegrid from '../components/Mygamegrid.vue';
+  import Chat from '../components/Chat.vue';
 </script>
 
 <template>
     <div>
-      <GameGrid/>
+      <!-- <GameGrid/> -->
+      <Chat/>
       <!-- <Mygamegrid/> -->
     </div>
 </template>
@@ -16,7 +18,8 @@ export default {
   name:'HomeView',
   components : {
     GameGrid, 
-    Mygamegrid
+    Mygamegrid,
+    Chat
   }
 }
 </script>
