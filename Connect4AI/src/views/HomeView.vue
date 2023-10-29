@@ -1,19 +1,34 @@
 <script setup>
-  import GameGrid from '../components/GameGrid.vue';
+import NavBar from '../components/NavBar.vue';
+import GameGrid from '../components/GameGrid.vue';
+import VersusMenu from '../components/VersusMenu.vue';
 </script>
 
 <template>
+  <NavBar/>
+  
+  <VersusMenu/>
+
+<!-- 
     <div>
       <GameGrid/>
-    </div>
+    </div> -->
 </template>
+
+<style>
+
+
+
+</style>
 
 
 <script>
 export default {
   name:'HomeView',
   components : {
-    GameGrid
+    GameGrid,
+    NavBar,
+    VersusMenu
   }
 }
 </script>

@@ -1,8 +1,8 @@
 const RowCount = 6
 const ColumnCount = 7
-const Red = 1
-const Yellow = 2
-const Empty = 0
+export const P1 = 1
+export const P2 = 2
+export const Empty = 0
 
 // Retourne le nombre de valeur pour chaque clés (0:Empty 1:player1 2:player2)
 function count(inputArray, item) {
@@ -12,26 +12,187 @@ function count(inputArray, item) {
 
 function getScore(section) {
     let score=0
-    if(count(section,Yellow)==4){
+    if(count(section,P2)==4){
         score += 100
     }
-    if (count(section,Yellow)==3 && count(section, Empty)==1) {
+    if (count(section,P2)==3 && count(section, Empty)==1) {
         score+=10
     }
-    if (count(section,Yellow)==2 && count(section, Empty)==2) {
+    if (count(section,P2)==2 && count(section, Empty)==2) {
         score += 5
     }
-    if (count(section,Red)==3 && count(section, Empty)==1) {
+    if (count(section,P1)==3 && count(section, Empty)==1) {
         score -= 80
     }
 
     return score
 }
-
+// IA Medium
 export function minimax(board, depth, maximizingPlayer){
-    let isTerminal = isValidColumn(board,Red) || isValidColumn(board,Yellow) || getValidColumns(board).length==0
+
+    let isTerminal = isWinningMove(board,P1) || isWinningMove(board,P2) || getValidColumns(board).length==0
+    
+    // console.log('isTerminal : ',isTerminal);
     if(isTerminal || depth == 0){
-        
+        if (isTerminal) {
+            // console.log("isTerminal");
+            if (isWinningMove(board,P1)) {
+                // console.log("isWinningMove P1");
+                return {
+                    "score": -10000,
+                    "column": undefined
+                }
+            }
+            if (isWinningMove(board, P2)) {
+                // console.log("isWinningMove P2");
+                return {
+                    "score": 10000,
+                    "column": undefined
+                }
+            }
+            return {
+                "score": 0,
+                "column": undefined
+            }
+        } else{
+            // console.log("ELSE isTerminal");
+            return {
+                "score": boardScore(board),
+                "column": undefined
+            }
+        }
+    }
+
+    let validColumns = getValidColumns(board)
+
+    if(maximizingPlayer){
+        let score = -Infinity
+        let column = Math.floor(Math.random() * validColumns.length)
+        // console.log('first RAND col = ' , column);
+        for (let i = 0; i < validColumns.length; i++) {
+            let newColumn = validColumns[i]
+            let row = getOpenRow(board, newColumn)
+            let boardCopy = copyBoard(board)
+            dropPiece(boardCopy, row, newColumn, P2)
+            let result = minimax(boardCopy, depth-1, false)
+            let newScore = result.score
+            if (newScore> score) {
+                score = newScore
+                column = newColumn
+            }
+        }
+        return {
+            "score": score,
+            "column": column
+        }
+    }else{
+        let score = Infinity
+        let column = Math.floor(Math.random() * validColumns.length)
+        for (let i = 0; i < validColumns.length; i++) {
+            let newColumn = validColumns[i]
+            let row = getOpenRow(board, newColumn)
+            let boardCopy = copyBoard(board)
+            dropPiece(boardCopy, row, newColumn, P1)
+            let result = minimax(boardCopy, depth-1, true)
+            let newScore = result.score
+            if(newScore < score){
+                score = newScore
+                column = newColumn
+            }
+        }
+        return {
+            "score": score,
+            "column": column
+        }
+    }
+}
+
+// IA Hard
+export function minimax_abp(board, depth, alpha, beta, maximizingPlayer){
+
+    let isTerminal = isWinningMove(board,P1) || isWinningMove(board,P2) || getValidColumns(board).length==0
+    
+    // console.log('isTerminal : ',isTerminal);
+    if(isTerminal || depth == 0){
+        if (isTerminal) {
+            // console.log("isTerminal");
+            if (isWinningMove(board,P1)) {
+                // console.log("isWinningMove P1");
+                return {
+                    "score": -10000,
+                    "column": undefined
+                }
+            }
+            if (isWinningMove(board, P2)) {
+                // console.log("isWinningMove P2");
+                return {
+                    "score": 10000,
+                    "column": undefined
+                }
+            }
+            return {
+                "score": 0,
+                "column": undefined
+            }
+        } else{
+            // console.log("ELSE isTerminal");
+            return {
+                "score": boardScore(board),
+                "column": undefined
+            }
+        }
+    }
+
+    let validColumns = getValidColumns(board)
+
+    if(maximizingPlayer){
+        let score = -Infinity
+        let column = Math.floor(Math.random() * validColumns.length)
+        // console.log('first RAND col = ' , column);
+        for (let i = 0; i < validColumns.length; i++) {
+            let newColumn = validColumns[i]
+            let row = getOpenRow(board, newColumn)
+            let boardCopy = copyBoard(board)
+            dropPiece(boardCopy, row, newColumn, P2)
+            let result = minimax_abp(boardCopy, depth-1, alpha, beta, false)
+            let newScore = result.score
+            if (newScore> score) {
+                score = newScore
+                column = newColumn
+            }
+            alpha = Math.max(alpha,score)
+            if(alpha>=beta){
+                break
+            }
+        }
+        return {
+            "score": score,
+            "column": column
+        }
+    }else{
+        let score = Infinity
+        let column = Math.floor(Math.random() * validColumns.length)
+        for (let i = 0; i < validColumns.length; i++) {
+            let newColumn = validColumns[i]
+            let row = getOpenRow(board, newColumn)
+            let boardCopy = copyBoard(board)
+            dropPiece(boardCopy, row, newColumn, P1)
+            let result = minimax_abp(boardCopy, depth-1, alpha, beta, true)
+            let newScore = result.score
+            if(newScore < score){
+                score = newScore
+                column = newColumn
+            }
+            beta = Math.min(beta,score)
+            if(alpha>=beta){
+                break
+            }
+
+        }
+        return {
+            "score": score,
+            "column": column
+        }
     }
 }
 
@@ -68,7 +229,7 @@ export function boardScore(board) {
     for (let row = 0; row < RowCount; row++) {
         centerColumnArray.push(board[row][centerColumn])
     }
-    let centerPieces = count(centerColumnArray, Yellow)
+    let centerPieces = count(centerColumnArray, P2)
     score += centerPieces*5
 
     // Score Rows 
@@ -119,6 +280,7 @@ export function boardScore(board) {
 
 // Vérifier si une colonne est jouable
 export function isValidColumn(board, column) {
+    // console.log(board[0]);
     return board[0][column] == 0   
 }
 

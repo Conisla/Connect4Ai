@@ -1,31 +1,10 @@
 <template>
     <div>
-        
-        <h1>PUISSANCE 4</h1>
-
-        <div class="toggle-ia-btn">
-            <p>
-                Vous jouez contre :
-                <span v-if="vsAI">IA</span>
-                <span v-else>Joueur</span>
-            </p>
-            <label class="switch">
-                <input type="checkbox" v-model="vsAI">
-                <span class="slider round"></span>
-            </label>
-        </div>
-        
-        <h2 v-show="!gameOver" >Joueur <span v-if="turn==player1">{{ this.red }}</span><span v-else>{{ this.yellow }}</span></h2>
-        
-        <div v-show="gameOver">
-            <h2>Joueur <span v-if="turn==player1">{{ this.red }} </span><span v-else>{{ this.yellow }}</span> a gagné !</h2>
-            <button class="reset-btn" type="button" @click="resetBoard()"> Nouvelle Partie </button> 
-        </div>
+      
+        <h2 v-show="!gameOver" >Joueur <span v-if="turn==player1">{{ this.p1 }}</span><span v-else>{{ this.p2 }}</span></h2>
         
         <div class="wrapper">
-
             <div id="board">
-
                 <div
                     v-for="(column, columnIndex) in board[0]"
                     :style="{
@@ -42,8 +21,8 @@
                         <circle 
                         :class="{
                             empty: column == 0,
-                            red: column == 1,
-                            yellow: column == 2
+                            p1: column == 1,
+                            p2: column == 2
                         }" 
                         cx="25"
                         cy="25"
@@ -51,136 +30,96 @@
                         />
                     </svg>
                 </div>
-
             </div>
-
         </div>
 
+        <div v-show="gameOver">
+            <h2>Joueur <span v-if="turn==player1">{{ this.p1 }} </span><span v-else>{{ this.p2 }}</span> a gagné !</h2>
+            <button class="reset-btn" type="button" @click="resetBoard()"> Nouvelle Partie </button> 
+        </div>
     </div>
 </template>
 
 <style>
-/* Styles pour le toggle switch */
-.toggle-ia-btn{
-    margin: 2% 0;
-}
 
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
-
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-  border-radius: 50%;
-}
-
-input:checked + .slider {
-  background-color: #2196F3;
-}
-
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
-
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
+h2{
+    color: #B9CAD9;
 }
 
 .wrapper{
-    display: flex;
-    justify-content: center;
-    margin-top: 50px;
+  display: flex;
+  justify-content: center;
 }
 
 .row {
-    padding: 5px 0;
-    background-color:rgb(20, 43, 155);
-    height: 60px;
+  padding: 5px 0;
+  background-color:rgba(20, 43, 155, 0.0);
+  height: 60px;
+}
+svg{
+  height: 100px;
 }
 
 circle.empty {
-    fill: white;
+  fill: #d0d0d1;
 }
 
-circle.red {
-    fill: red;
+circle.p1 {
+  fill: transparent;
+  stroke: #f42a50;
+  stroke-width: 4px;
 }
 
-circle.yellow {
-    fill: yellow;
+circle.p2 {
+  fill: transparent;
+  stroke: #e9db94;
+  stroke-width: 4px;
 }
 
 .reset-btn{
-    position: relative;
+  position: relative;
 }
 
 #board{
-    position: relative;
+  position: relative;
 }
 
 .column {
-    position: absolute;
-    top: 0;
-    width: 50px;
-    height: 100%;
-    transition: background-color 0.3s ease-out;
-    background-color: transparent;
+  position: absolute;
+  top: 0;
+  width: 50px;
+  height: 100%;
+  transition: background-color 0.3s ease-out;
+  background-color: transparent;
 }
 
 .column:hover{
-    background-color: rgba(255, 255, 255, 0.3);
-    cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
 }
+
 </style>
 
 <script>
 import * as connect4 from '@/connect4.js';
-import io from 'socket.io-client';
+import io, { connect } from 'socket.io-client';
 export default {
     name:'GameGrid',
+    props:{
+        mode: Number,
+        vsAI: Boolean
+    },
     data() {
         return {
+            result: {},
             board: [],
             turn: 0,
             player1: 0,
             player2: 1,
-            red: connect4.Red,
-            yellow: connect4.Yellow,
+            p1: connect4.P1,
+            p2: connect4.P2,
             empty: connect4.Empty,
             gameOver: false,
-            vsAI: false,
             socket: io('http://localhost:3000'),
         }
     },
@@ -194,10 +133,14 @@ export default {
             for (let i = 0; i < validColumns.length; i++) {
 
                 let newColumn = validColumns[i]
+
+                // get le premier row disponible de la colone selectionné 
                 let row = connect4.getOpenRow(this.board, newColumn)
+    
                 let boardCopy = connect4.copyBoard(this.board)
 
-                connect4.dropPiece(boardCopy,row,newColumn,this.yellow)
+                connect4.dropPiece(boardCopy,row,newColumn,this.p2)
+    
                 let newScore = connect4.boardScore(boardCopy)
 
                 if(newScore > highestScore){
@@ -220,22 +163,45 @@ export default {
 
 
                 let row = connect4.getOpenRow(this.board, column)
-                let color = this.turn == this.player1 ? this.red : this.yellow
-               connect4.dropPiece(this.board, row, column, color)
-                if(connect4.isWinningMove(this.board, color)){
+                let player = this.turn == this.player1 ? this.p1 : this.p2
+               connect4.dropPiece(this.board, row, column, player)
+                if(connect4.isWinningMove(this.board, player)){
                     this.gameOver = true;
                 }else{
                     this.turn +=1
                     this.turn = this.turn % 2
-                    if(this.vsAI){this.AITurn()}
+                    
+                    if(this.vsAI){
+                        this.AITurn(this.mode)
+                    }
                 }
             }
         },
-        AITurn(){
-            let column = this.selectBestColumn()
+        AITurn(mode){
+            let column = undefined
+            //Easy mode
+            if (mode == 0){
+                column = this.selectBestColumn() 
+            }
+            //Medium mode
+            else if(mode==1){
+                this.result = connect4.minimax(this.board, 2, true)
+                column = this.result.column
+            }
+            //Hard mode
+            else if(mode==2){
+                this.result = connect4.minimax_abp(this.board, 5,-Infinity, Infinity, true)
+                column = this.result.column
+            }
+            else{
+                console.log('random mode');
+                column = this.selectBestColumn() 
+            }
+            
             let row = connect4.getOpenRow(this.board, column)
-            connect4.dropPiece(this.board, row, column, this.yellow)
-            if(connect4.isWinningMove(this.board, this.yellow)){
+
+            connect4.dropPiece(this.board, row, column, this.p2)
+            if(connect4.isWinningMove(this.board, this.p2)){
                 this.gameOver = true
             }else{
                 this.turn +=1
@@ -246,7 +212,7 @@ export default {
 
     created() {
         this.board = connect4.createBoard()
-        console.log("BEGIN = ",this.board)
+        // console.log("BEGIN = ",this.board)
         
         this.socket.emit('message', 'Start game');
 
