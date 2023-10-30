@@ -1,6 +1,11 @@
+<script setup>
+  import GameGrid from '../components/GameGrid.vue';
+</script>
+
+
 <template>
-    <div class="container">
-      <div v-if="!joined" class="parent-container">
+    
+      <div v-if="!joined" class="login-container">
         <div class="name-container">
           <input type="text" class="user-name" v-model="currentUser" />
           <button class="join-button" v-on:click="join">Join</button>
@@ -8,15 +13,14 @@
       </div>
   
       <div v-if="joined" class="parent-container-chat">
-        <div class="div1">
-          <h1>Div 1 (60%)</h1>
-          <p>Ceci est le contenu de la première div.</p>
-        </div>
-  
-        <div class="div2">
+        <div class="chat-container">
+          
           <div class="list-container">
             <div v-for="message in messages" :key="message.id">
-              <b>{{ message.user }}</b> : {{ message.text }}
+              <b>
+                {{ message.user }}
+              </b>
+              : {{ message.text }}
             </div>
           </div>
   
@@ -28,8 +32,15 @@
             ></textarea>
           </div>
         </div>
+
+        
+        <div class="game-container ">
+          <GameGrid/>
+        </div>
+  
+        
       </div>
-    </div>
+
 </template>
   
 <script>
@@ -76,17 +87,19 @@ export default {
 </script>
 
 <style scoped>
-.container {
+.login-container {
   display: flex;
-  flex-direction: row;
-  height: 100vh;
+  justify-content: center;
+  position: fixed;
+  padding-top: 150px;
+  width: 100%;
+  height: 100%;
 }
 
-.parent-container {
-  flex: 1;
-  background-color: #e74c3c;
-  color: white;
-  padding: 20px;
+.name-container {
+  display: flex;
+  flex-direction: column;
+  width: 200px;
 }
 
 .parent-container-chat {
@@ -95,34 +108,16 @@ export default {
   flex-direction: row;
 }
 
-.div1 {
+.game-container {
   flex: 80%;
-  background-color: #e74c3c;
-  color: white;
-  padding: 20px;
-}
-
-.div2 {
-  flex: 20%;
   color: white;
   padding: 20px;
 }
 
 .chat-container {
-  position: fixed;
-  bottom: 20px; /* Ajustez la distance par rapport au bas */
-  right: 20px; /* Ajustez la distance par rapport à la droite */
-  background-color: #ffffff;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-}
-
-.name-container {
-  display: flex;
-  flex-direction: column;
-  width: 200px;
+  flex: 20%;
+  background-color: #e74c3c;
+  color: white;
 }
 
 .user-name {
@@ -140,15 +135,20 @@ export default {
 }
 
 .text-input-container {
-  height: 100vh;
+  height: 90vh;
 }
 
 .text-message {
-  width: 50%;
+  left: 1px;
+  width: 20%;
   position: absolute;
-  bottom: 0px;
+  bottom: 8px;
   height: 70px;
   padding: 10px;
   box-sizing: border-box;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
 </style>

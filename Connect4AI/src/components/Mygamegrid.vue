@@ -217,8 +217,23 @@ export default {
         },
 
         takeTurn(column){
-            this.socket.emit('makeMove', column, this.turn);
+            this.socket.emit('makeMove', { column, board: this.board, turn: this.player1, gameOver: this.gameOver });
+            // console.log('emit moove')
 
+            this.socket.on('dropPiece', (board, turn) => {
+                this.board = board
+                // this.turn = turn
+                console.log(turn)
+                // console.log('drop piece')
+                this.socket.on('turnPlayer', (turn) => {
+                    this.turn = turn
+                    console.log(turn)
+                })
+            })
+
+            this.socket.on('gameOver', (gameOver) => {
+                this.gameOver = gameOver
+            })
             
                 // if(!this.gameOver && connect4.isValidColumn(this.board, column)){
 
@@ -263,16 +278,6 @@ export default {
         this.socket.on('response', (msg) => {
             console.log(msg)
         })
-        
-        this.socket.on('updateGame', (updatedGameBoard, playerColor) => {
-                
-                this.board = updatedGameBoard;
-                // console.log(gameBoard);
-            this.socket.on('gameOver', (message, gameBoard) => {
-                console.log(message)
-            })
-            
-        });
 
     },
 }

@@ -207,5 +207,7 @@ module.exports = {
     getValidColumns,
     getOpenRow,
     dropPiece,
-    isWinningMove
+    isWinningMove,
+    Red,
+    Yellow
   };

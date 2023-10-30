@@ -1,5 +1,5 @@
 const express = require('express');
-const {createBoard, isValidColumn, getOpenRow, isWinningMove, dropPiece} = require('./connect4')
+const {createBoard, isValidColumn, getOpenRow, isWinningMove, dropPiece, Red, Yellow} = require('./connect4')
 
 const app = express();
 const httpServer = require("http").createServer(app);
@@ -19,30 +19,36 @@ io.on('connection', (socket) => {
     console.log(`UserId : ${socket.id} connected`)
     // console.log(`serveur : ${socket.rooms}`)
     
-    socket.on('message', (data) => {
-      console.log('Message du client :', data);
-      io.emit('message', data);
+    socket.on('message', data => {
+      // console.log('Message du client :', data);
+      socket.broadcast.emit('message:received', data)
 
       socket.emit('response', 'Message reçu !');
       
     });
 
     let gameBoard = createBoard();
-    socket.emit('startgame', (gameBoard));
+    io.emit('startgame', (gameBoard));
 
-    socket.on('makeMove', (column, playerColor) => {
-      if (isValidColumn(gameBoard, column)) {
-        const row = getOpenRow(gameBoard, column);
+    socket.on('makeMove', ({ column, board, turn, gameOver })=> {
+      if (!gameOver && isValidColumn(board, column)) {
+        // console.log(turn)
 
-        if (row !== -1) {
+        let row = getOpenRow(board, column);
+        let color = turn == this.player1 ? Red : Yellow;
 
-          gameBoard = dropPiece(gameBoard, row, column, playerColor)
-          io.emit('updateGame', (gameBoard, playerColor));
-  
-          // Vérifier si le joueur a gagné
-          if (isWinningMove(gameBoard, playerColor)) {
-            io.emit('gameOver', `${playerColor === 1 ? 'Player 1' : 'Player 2'} wins!`);
-          }
+        board = dropPiece(board, row, column, color);
+
+        io.emit('dropPiece', board, color);
+
+        if (isWinningMove(board, color)) {
+          let gameOver = true;
+          // socket.emit('gameOver', (gameOver))
+        }else {
+          turn += 1
+          turn = turn % 2
+          socket.emit('turnPlayer', (turn))
+          console.log(turn)
         }
       }
     })
