@@ -30,25 +30,31 @@
         flex-direction: row;
     }
     .vsCategorie{
+
         display: flex; 
         flex-direction: column; 
         align-items: center;
         justify-content: center; 
-        width: 350px;
-        height: 350px;
+        width: 250px;
+        height: 250px;
         border-radius: 100%;
         border: 22px solid #E9DB94;
         margin: auto 2vw;
         font-size: 30px;
     }
-
+    .vsCategorie h2 {
+        color: #B9CAD9;
+        
+    }
     .vsPlayer .vsCategorie{
         border: 22px solid #F42A50;
+        text-decoration: none;
     }
 
     .vsPlayer{
         display: flex;
         flex-direction: row;
+        text-decoration: none;
         width: min-content;
         height: min-content;
     }

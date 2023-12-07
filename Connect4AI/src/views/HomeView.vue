@@ -6,13 +6,7 @@ import VersusMenu from '../components/VersusMenu.vue';
 
 <template>
   <NavBar/>
-  
   <VersusMenu/>
-
-<!-- 
-    <div>
-      <GameGrid/>
-    </div> -->
 </template>
 
 <style>
